@@ -139,7 +139,7 @@ function downloadPDF() {
         return;
     }
     
-    // Populate fields
+    // Populate elements safely
     document.getElementById('pdf-name').innerText = name;
     document.getElementById('pdf-date').innerText = new Date().toLocaleDateString();
     
@@ -153,17 +153,20 @@ function downloadPDF() {
     document.getElementById('pdf-a_q4').innerText = document.getElementById('after_q4').value.trim() || "Not answered.";
     
     const element = document.getElementById('pdf-template');
-    element.style.display = 'block';
+    element.style.display = 'block'; // Make visible to print engine
     
     const options = {
         margin:       0.75,
         filename:     'AI_Ethics_Reflections.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, logging: false },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     
     html2pdf().set(options).from(element).save().then(() => {
+        element.style.display = 'none'; // Re-hide safely
+    }).catch(err => {
+        console.error("PDF generation error: ", err);
         element.style.display = 'none';
     });
 }
